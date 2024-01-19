@@ -6,7 +6,7 @@ export CHAIN = soarchaind
 export NODE = http://localhost:26657
 export CHAINID = soarchaindevnet
 export DENOM = udmotus
-export ACCOUNT = client
+export ACCOUNT = rider
 
 ############
 ## DEVNET ##
@@ -15,7 +15,7 @@ export ACCOUNT = client
 # export CHAINID = soarchaintestnet
 # export DENOM = utmotus
 # export CHAIN = soarchaind
-# export ACCOUNT = client
+# export ACCOUNT = rider
 
 #######################
 ## Docker Container ###
@@ -30,16 +30,15 @@ stop-node:
 export ESCROW_CONTRACT_ADDRESS = soar14hj2tavq8fpesdwxxcu44rty3hh90vhujrvcmstl4zr3txmfvw9sg0qwca
 export code = 1
 
-export from = soar1ghfnkjlc5gxpldat7hm50tgggwc6l5h7ydwy2a
-export id = 1
-export userb = soar1ctvwnwl30getglarz2pp0gmnpggx4zznmlkv7j
+export rider-address = soar1ghfnkjlc5gxpldat7hm50tgggwc6l5h7ydwy2a
+export escrow-id = 1
+export driver-address = soar1ctvwnwl30getglarz2pp0gmnpggx4zznmlkv7j
 export LOCK = 02461ae37ec9ba387a57fab3b8511e89d91ec0460c4a25718e5c58ed6cfb839943
 export SECRET = 503cb09aacc89ace7cedd6e1404752eb6782c86fc576785d8be01c509f000bab74daf67fd4b80a0c342c440275512d81a454fe29a26f7ea478c5ad6c0006c1b0
-
-export cw20Code = 2
-export sender = soar1ghfnkjlc5gxpldat7hm50tgggwc6l5h7ydwy2a
-export receipt = soar1ctvwnwl30getglarz2pp0gmnpggx4zznmlkv7j
+export soarMasterAccount = soar1qt8myp9424ng6rv4fwf65u9a0ttfschw5j4sp8
 export amount = 45687
+export cw20Code = 2
+export RIDER = rider
 
 #####################
 ## Escrow Contract ##
@@ -58,20 +57,25 @@ init-escrow:
 	./scripts/escrow/init-escrow.sh $(code)
 
 create-escrow:
-	./scripts/escrow/create-escrow.sh $(from) $(id) $(userb) $(LOCK) $(amount)
+	./scripts/escrow/create-escrow.sh $(rider-address) $(escrow-id) $(driver-address) $(LOCK) $(amount)
 
 list-escrow:
 	./scripts/escrow/list-escrow.sh
 
 details-escrow:
-	./scripts/escrow/details-escrow.sh $(id)
+	./scripts/escrow/details-escrow.sh $(escrow-id)
 
 withdraw-escrow:
-	./scripts/escrow/withdraw-escrow.sh $(id) $(SECRET)
+	./scripts/escrow/withdraw-escrow.sh $(RIDER) $(escrow-id) $(SECRET)
 
 cancel-escrow:
-	./scripts/escrow/cancel-escrow.sh $(from) $(id)
+	./scripts/escrow/cancel-escrow.sh $(rider-address) $(escrow-id)
 
+##################
+## Native Token ##
+
+send-token:
+	./scripts/escrow/send-escrow.sh  $(soarMasterAccount) $(driver-address) $(1000000000udmotus)
 
 ###################
 ## CW20 Contract ##
@@ -89,8 +93,3 @@ init-cw20:
 	./scripts/cw20/init-cw20.sh $(cw20Code)
 
 
-##################
-## Native Token ##
-
-send-token:
-	./scripts/escrow/send-escrow.sh  $(sender) $(receipt) $(amount)
