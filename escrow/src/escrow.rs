@@ -1,11 +1,6 @@
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-// use k256::{
-//     ecdsa::SigningKey,              
-//     elliptic_curve::sec1::ToEncodedPoint,
-// };
-
 use cosmwasm_std::{Addr, Uint128};
 
 use crate::error::EscrowError;
@@ -18,9 +13,9 @@ pub struct Escrow {
     pub user_b: Addr,
     /// deposit are the funds locked in escrow
     pub deposit: Uint128,
-    /// lock is the public key that guards the deposit. 
-    /// the corresponding private key is necessary to withdraw.
-    pub lock: String,
+    /// lock is the f2a key (digit) that guards the deposit. 
+    /// the corresponding f2a key is necessary to withdraw.
+    pub lock: Uint128,
     /// close indicates whether the escrow is closed and already settled
     /// if this value is true, it is assumed that all payouts have already
     /// been settled
@@ -32,7 +27,7 @@ impl Escrow {
         user_a: Addr,
         user_b: Addr,
         deposit: Uint128,
-        lock: &str,
+        lock: Uint128,
     ) -> Result<Self,EscrowError> {
         
         if deposit.is_zero() {
@@ -43,23 +38,24 @@ impl Escrow {
             user_a,
             user_b,
             deposit,
-            lock: lock.to_string(),
+            lock: lock,
             closed: false,
         })
     }
 
     /// Returns an EscrowError:InvalidSecret if the secret is invalid
-    pub fn unlock(&mut self, escrow_lock: String, secret:&str) -> Result<(), EscrowError> {        
-        let private_key = hex::decode(secret);
-        if private_key.is_err() {
-            return Err(EscrowError::InvalidSecret {  });
+    pub fn unlock(&mut self, owner: String, secret: Uint128) -> Result<(), EscrowError> {        
+
+        if self.user_a != owner.to_string() {
+            return Err(EscrowError::InvalidUnlockOwner { });
         }
 
-        if escrow_lock == self.lock {
-            return Ok(());
+        if self.lock != secret {
+            return Err(EscrowError::InvalidSecret { });
         }
 
-        return Err(EscrowError::InvalidSecret { });
+        return Ok(());
+       
     }
 
     /// close sets the closed flag to true 
