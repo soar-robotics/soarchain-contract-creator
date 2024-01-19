@@ -19,7 +19,7 @@ use crate::msg::{
 };
 
 use crate::escrow::Escrow;
-use crate::state::{all_escrow_ids, ESCROWS, BALANCES};
+use crate::state::{all_escrow_ids, ESCROWS, BALANCES, State, STATE};
 
 // version info for migration info
 const CONTRACT_NAME: &str = "crates.io:escrow";
@@ -29,12 +29,22 @@ const CONTRACT_VERSION: &str = env!("CARGO_PKG_VERSION");
 pub fn instantiate(
     deps: DepsMut,
     _env: Env,
-    _info: MessageInfo,
+    info: MessageInfo,
     _msg: InstantiateMsg,
 ) -> StdResult<Response> {
+
+    let state = State {
+        owner: info.sender.to_string(),
+    };
+
     set_contract_version(deps.storage, CONTRACT_NAME, CONTRACT_VERSION)?;
 
-    Ok(Response::default())
+    STATE.save(deps.storage, &state)?;
+
+    Ok(Response::new()
+        .add_attribute("method", "instantiate")
+        .add_attribute("owner", info.sender.to_string())
+    )
 }
 
 #[cfg_attr(not(feature = "library"), entry_point)]
@@ -64,7 +74,7 @@ pub fn execute_create(
         sender.clone(),
         user_b_addr,
         msg.amount,
-        &msg.lock,
+        msg.lock,
     )?;
 
     // try to store it, fail if the id was already in use
@@ -85,7 +95,6 @@ pub fn execute_withdraw(
 ) -> Result<Response, ContractError> {
     // this fails if no escrow there
     let mut escrow = ESCROWS.load(deps.storage, &msg.id)?;
-    //let lock = &escrow.lock;
 
     if escrow.deposit.eq(&Uint128::new(0_u128)) {
         return Result::Err(ContractError::ZeroAmount {});
@@ -95,9 +104,7 @@ pub fn execute_withdraw(
         return Err(ContractError::Closed {});
     }
 
-    let escrow_detail = ESCROWS.load(deps.storage, &msg.id)?;
-
-    escrow.unlock(escrow_detail.lock, &msg.secret)?;
+    escrow.unlock(info.sender.to_string(), msg.secret)?;
 
     escrow.close();
     
