@@ -74,8 +74,13 @@ cancel-escrow:
 ##################
 ## Native Token ##
 
-send-token:
-	./scripts/escrow/send-escrow.sh  $(soarMasterAccount) $(driver-address) $(1000000000udmotus)
+export tokentosend = 1000000000udmotus
+
+send-token-to-account:
+	./scripts/escrow/send-token.sh  $(soarMasterAccount) $(driver-address) $(tokentosend)
+
+send-token-to-contract:
+	./scripts/escrow/send-token.sh  $(soarMasterAccount) $(ESCROW_CONTRACT_ADDRESS) $(tokentosend)
 
 ###################
 ## CW20 Contract ##
