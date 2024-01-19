@@ -36,4 +36,7 @@ pub enum EscrowError {
 
     #[error("Invalid Secret")]
     InvalidSecret {},
+
+    #[error("Only escrow creator can unlock")]
+    InvalidUnlockOwner {},
 }
