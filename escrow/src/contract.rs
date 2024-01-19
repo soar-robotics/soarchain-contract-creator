@@ -30,11 +30,12 @@ pub fn instantiate(
     deps: DepsMut,
     _env: Env,
     info: MessageInfo,
-    _msg: InstantiateMsg,
+    msg: InstantiateMsg,
 ) -> StdResult<Response> {
 
     let state = State {
         owner: info.sender.to_string(),
+        denom: msg.denom
     };
 
     set_contract_version(deps.storage, CONTRACT_NAME, CONTRACT_VERSION)?;
@@ -44,6 +45,7 @@ pub fn instantiate(
     Ok(Response::new()
         .add_attribute("method", "instantiate")
         .add_attribute("owner", info.sender.to_string())
+        .add_attribute("denom", state.denom.to_string())
     )
 }
 
@@ -117,10 +119,11 @@ pub fn execute_withdraw(
     )?;
 
     let u128_deposit_amount: u128 = escrow.deposit.u128();
+    let state = STATE.load(deps.storage)?;
 
     let msg = BankMsg::Send {
         to_address: escrow.user_b.to_string(),
-        amount: vec![coin(u128_deposit_amount, "udmotus")],
+        amount: vec![coin(u128_deposit_amount, state.denom.to_string())],
     };
 
     
