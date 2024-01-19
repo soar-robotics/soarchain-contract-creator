@@ -21,14 +21,14 @@ pub struct CreateMsg {
     /// 3-20 bytes of utf-8 text
     pub id: String,
     pub user_b: String,
-    pub lock: String,
+    pub lock: Uint128,
     pub amount: Uint128,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
 pub struct WithdrawMsg {
     pub id: String,
-    pub secret: String,
+    pub secret: Uint128,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
@@ -54,6 +54,6 @@ pub struct DetailsResponse {
     pub user_a: String,
     pub user_b: String,
     pub deposit: Uint128,
-    pub lock: String,
+    pub lock: Uint128,
     pub closed: bool,
 }
