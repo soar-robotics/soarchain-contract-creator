@@ -3,7 +3,7 @@
 use cosmwasm_std::entry_point;
 use cosmwasm_std::{
     to_binary, Addr, Binary, Deps, DepsMut, Env, MessageInfo, Response,
-    StdResult, Uint128};
+    StdResult, Uint128, BankMsg, coin};
 
 use cw2::set_contract_version;
 
@@ -116,11 +116,21 @@ pub fn execute_withdraw(
         |balance: Option<Uint128>| -> StdResult<_> { Ok(balance.unwrap_or_default() + escrow.deposit) },
     )?;
 
+    let u128_deposit_amount: u128 = escrow.deposit.u128();
+
+    let msg = BankMsg::Send {
+        to_address: escrow.user_b.to_string(),
+        amount: vec![coin(u128_deposit_amount, "udmotus")],
+    };
+
+    
+
     let res = Response::new()
         .add_attribute("action", "withdraw")
         .add_attribute("from", info.sender)
         .add_attribute("to", escrow.user_b)
-        .add_attribute("amount", escrow.deposit);
+        .add_attribute("amount", escrow.deposit)
+        .add_message(msg);
     Ok(res)
 }
 
