@@ -54,7 +54,7 @@ deploy-escrow:
 	./scripts/escrow/deploy-escrow.sh
 
 init-escrow:
-	./scripts/escrow/init-escrow.sh $(code)
+	./scripts/escrow/init-escrow.sh $(code) $(DENOM)
 
 create-escrow:
 	./scripts/escrow/create-escrow.sh $(rider-address) $(escrow-id) $(driver-address) $(LOCK) $(amount)
