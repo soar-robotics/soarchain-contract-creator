@@ -12,6 +12,7 @@ pub const STATE: Item<State> = Item::new("state");
 #[derive(Serialize, Deserialize)]
 pub struct State {
     pub owner: String,
+    pub denom: String
 }
 
 /// This returns the list of ids for all registered escrows
