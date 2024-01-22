@@ -44,12 +44,6 @@ export RIDER = rider
 ## Escrow Contract ##
 
 
-build-escrow:
-	./scripts/build.sh "$(shell pwd)/escrow"
-
-compile-escrow:
-	./scripts/compile.sh "$(shell pwd)/escrow"
-
 deploy-escrow:
 	./scripts/escrow/deploy-escrow.sh
 
@@ -96,5 +90,16 @@ deploy-cw20:
 
 init-cw20:
 	./scripts/cw20/init-cw20.sh $(cw20Code)
+
+###################
+## Pre-Deploy Configuration ##
+
+
+
+build-escrow:
+	./scripts/build.sh "$(shell pwd)/escrow"
+
+compile-escrow:
+	./scripts/compile.sh "$(shell pwd)/escrow"
 
 
