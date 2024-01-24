@@ -46,8 +46,9 @@ impl Escrow {
     /// Returns an EscrowError:InvalidSecret if the secret is invalid
     pub fn unlock(&mut self, owner: String, secret: Uint128) -> Result<(), EscrowError> {        
 
+        // Ensure that the sender is the owner of the contract
         if self.user_a != owner.to_string() {
-            return Err(EscrowError::InvalidUnlockOwner { });
+            return Err(EscrowError::Unauthorized { });
         }
 
         if self.lock != secret {
