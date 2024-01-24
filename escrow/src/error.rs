@@ -21,6 +21,12 @@ pub enum ContractError {
     #[error("Amount was zero, must be positive")]
     ZeroAmount {},
 
+    #[error("Sender is not the owner of the contract")]
+    Unauthorized {},
+
+    #[error("Insufficient Funds")]
+    InsufficientFunds{},
+
 }
 
 #[derive(Error, Debug, PartialEq)]
@@ -37,6 +43,6 @@ pub enum EscrowError {
     #[error("Invalid Secret")]
     InvalidSecret {},
 
-    #[error("Only escrow creator can unlock")]
-    InvalidUnlockOwner {},
+    #[error("Sender is not the owner of the contract")]
+    Unauthorized {},
 }

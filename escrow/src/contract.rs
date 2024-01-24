@@ -70,7 +70,15 @@ pub fn execute_create(
     sender: &Addr,
 ) -> Result<Response, ContractError> {
   
+    // Ensure that the recipient address is valid
     let user_b_addr = deps.api.addr_validate(&msg.user_b)?;
+
+    let state = STATE.load(deps.storage)?;
+
+    // Ensure that the sender is the owner of the contract
+    if state.owner != sender.to_string() {
+        return Err(ContractError::Unauthorized {});
+    }
 
     let escrow = Escrow::create(
         sender.clone(),
@@ -79,7 +87,7 @@ pub fn execute_create(
         msg.lock,
     )?;
 
-    // try to store it, fail if the id was already in use
+    // Try to store it, fail if the id was already in use
     ESCROWS.update(deps.storage, &msg.id, |existing| match existing {
         None => Ok(escrow),
         Some(_) => Err(ContractError::AlreadyInUse {}),
@@ -95,11 +103,22 @@ pub fn execute_withdraw(
     info: MessageInfo,
     msg: WithdrawMsg,
 ) -> Result<Response, ContractError> {
-    // this fails if no escrow there
-    let mut escrow = ESCROWS.load(deps.storage, &msg.id)?;
 
+    let state = STATE.load(deps.storage)?;
+
+    // This fails if no escrow there
+    let mut escrow = ESCROWS.load(deps.storage, &msg.id)?;
+    let u128_deposit_amount: u128 = escrow.deposit.u128();
+
+    // Ensure the sender has enough funds to transfer
     if escrow.deposit.eq(&Uint128::new(0_u128)) {
         return Result::Err(ContractError::ZeroAmount {});
+    }
+
+    // Ensure the sender has enough funds to transfer
+    let rider_balance = deps.querier.query_balance(&info.sender, state.denom.as_str())?;
+    if rider_balance.amount < escrow.deposit {
+        return Err(ContractError::InsufficientFunds {}.into());
     }
 
     if escrow.closed {
@@ -118,19 +137,13 @@ pub fn execute_withdraw(
         |balance: Option<Uint128>| -> StdResult<_> { Ok(balance.unwrap_or_default() + escrow.deposit) },
     )?;
 
-    let u128_deposit_amount: u128 = escrow.deposit.u128();
-    let state = STATE.load(deps.storage)?;
-
     let msg = BankMsg::Send {
         to_address: escrow.user_b.to_string(),
         amount: vec![coin(u128_deposit_amount, state.denom.to_string())],
     };
 
-    
-
     let res = Response::new()
         .add_attribute("action", "withdraw")
-        .add_attribute("from", info.sender)
         .add_attribute("to", escrow.user_b)
         .add_attribute("amount", escrow.deposit)
         .add_message(msg);
@@ -143,13 +156,15 @@ pub fn execute_cancel(
     id: String,
     info: MessageInfo,
 ) -> Result<Response, ContractError> {
-    // this fails is no escrow there
+
+    // This fails is no escrow there
     let mut escrow = ESCROWS.load(deps.storage, &id)?;
 
     if escrow.closed {
         return Err(ContractError::Closed {  });
     }
 
+    // Ensure that the sender is the owner of the contract
     if info.sender != escrow.user_a {
         return Err(ContractError::InvalidUser { });
     }
@@ -158,11 +173,17 @@ pub fn execute_cancel(
     
     ESCROWS.save(deps.storage, &id, &escrow)?;
 
-    let res = Response::new().add_attributes(vec![
-        ("action", "cancel"),
-        ("id", &id.as_str()),
-    ]);
-        
+    let u128_deposit_amount: u128 = escrow.deposit.u128();
+    let state = STATE.load(deps.storage)?;
+
+    let msg = BankMsg::Send {
+        to_address: escrow.user_a.to_string(),
+        amount: vec![coin(u128_deposit_amount, state.denom.to_string())],
+    };
+
+    let res = Response::new()
+        .add_attribute("action", "cancel")
+        .add_message(msg);
     Ok(res)
 }
 
