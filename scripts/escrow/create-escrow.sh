@@ -1,5 +1,7 @@
 #!/bin/sh
 
+$CHAIN tx bank send $($CHAIN  keys show -a $soarMasterAccount) $ESCROW_CONTRACT_ADDRESS 100000$DENOM --chain-id $CHAINID --node $NODE --gas-prices 0.1$DENOM --gas auto --gas-adjustment 1.3 -b block -y
+
 RIDER=$1
 ID=$2
 DRIVER=$3
