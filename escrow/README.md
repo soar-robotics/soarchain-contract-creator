@@ -29,6 +29,10 @@ b. Docker Container
 The node can be run using Docker by creating a container. Follow the steps outlined below:
 
 * make start-node
+* into node container :
+  * Clone [soarchain-contract-creator](https://github.com/soar-robotics/soarchain-contract-creator.git)
+  * cd **soarchain-contract-creator** directory
+* make make-scripts-executable
 * make add-master
 
 Running ```bash make stop-node``` will stop the node
@@ -43,9 +47,13 @@ After ensuring the node is operational, we will proceed with the remaining opera
 
 To initiate a ride request, the rider's wallet must have a sufficient balance.
 
+# Optional: If there is access to a Motus account, the scripts can be updated using that account. If not, create a driver account using the following command
+
+* make add-driver
+
 **Note:** Drivers must be registered on the SoarChain network prior to participating. When a driver subscribes to ride requests through a ride-sharing application, riders will be presented with a list of available drivers. Subsequently, a rider can initiate an escrow request by sending a request to create escrow, along with the driver's address.
 
-3- Once the node is operational, it's time to interact with the escrow smart contract by following the steps below:
+3- Now, it's time to interact with the escrow smart contract by following the steps below:
 
 * make deploy-escrow
 * make init-escrow
@@ -70,16 +78,16 @@ With the escrow now established, we have the ability to:
 
 Alternatively Using the below command it is possible to send coins to the rider
 
-``` make send-token-to-rider ```
+* make send-token-to-rider
 
 OR to the related contract
 
-``` make send-token-to-contract ```
+* make send-token-to-contract
 
 The command make build-escrow is used to compile and build the Escrow contract
 
-``` make build-escrow ```
+* make build-escrow
 
 The command make compile-escrow is used to compile the source code of the Escrow contract without building the executable. This step is typically performed during development to check for syntax errors and ensure that the code is ready for compilation and subsequent deployment.
 
-``` make compile-escrow ```
+* make compile-escrow

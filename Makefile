@@ -23,6 +23,7 @@ SCRIPTS := ./scripts/escrow/build-escrow.sh \
 		   ./scripts/setup/configure-workspace.sh \
 		   ./scripts/setup/add-master.sh \
 		   ./scripts/setup/add-rider.sh \
+		   ./scripts/setup/add-driver.sh \
 
 
 # Target to make all script files executable
@@ -82,14 +83,17 @@ add-master:
 add-rider:
 	./scripts/setup/add-rider.sh $(ACCOUNT)
 
+add-driver:
+	./scripts/setup/add-driver.sh $(DRIVERACCOUNT)
+
 #####################
 ## Escrow Contract ##
 
 deploy-escrow:
-	./scripts/escrow/deploy-escrow.sh $(MASTERACCOUNT)
+	./scripts/escrow/deploy-escrow.sh $(ACCOUNT)
 
 init-escrow:
-	./scripts/escrow/init-escrow.sh $(code) $(MASTERACCOUNT)
+	./scripts/escrow/init-escrow.sh $(code) $(ACCOUNT)
 
 create-escrow:
 	./scripts/escrow/create-escrow.sh $(escrow-id) $(LOCK) $(DEPOSIT) $(DRIVERACCOUNT)
