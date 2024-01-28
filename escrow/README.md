@@ -12,34 +12,40 @@ The rider, in their role as the creator, initiates an escrow by securing funds, 
 1- Prior to commencing, detailed instructions are provided in our documentation at:
 SoarChain Smart Contracts - [Before Starting](https://docs.soarchain.com/smart%20contracts/before-Starting)
 
-2- Generate keys named "soarMasterAccount", "rider" and "driver" using soarchaind.
-
-```bash
-soarchaind keys add soarMasterAccount --recover --keyring-backend test --algo secp256k1
-soarchaind keys add rider --recover --keyring-backend test --algo secp256k1
-```
-
-**Note:** Driver should be already registered into the soarchain blokchain. This means drivers have address.  
-
 3- Install docker on the device
 
-## Workflow Demystified
+## Lunching Soarchain Node
 
-1- Run local node
+1- Lunching a soarchain node
+
+a. Local Node
 
 * Clone the [soarchain-core](https://github.com/soar-robotics/soarchain-core)
 * cd **soarchain-core** directory
 * Run  ```./run_makefile.sh```
 
-Note: The node can be run using Docker by creating a container. Follow the steps outlined below:
+b. Docker Container
 
-* Clone [soarchain-contract-creator](https://github.com/soar-robotics/soarchain-contract-creator.git)
-* cd **soarchain-contract-creator** directory
-* Run ```make start-node```
+The node can be run using Docker by creating a container. Follow the steps outlined below:
 
-**Note:** Running ```make stop-node``` will stop the node
+* make start-node
+* make add-master
 
-2- Once the node is operational, it's time to interact with the escrow smart contract by following the steps below:
+Running ```bash make stop-node``` will stop the node
+
+After ensuring the node is operational, we will proceed with the remaining operations within the SoarChain node container, following the steps outlined below:
+
+## Workflow Demystified
+
+1- Generate a cryptographic key named 'rider' using the SoarChain daemon (soarchaind). Riders are required to possess a wallet within the SoarChain network associated with this key.
+
+* make add-rider
+
+To initiate a ride request, the rider's wallet must have a sufficient balance.
+
+**Note:** Drivers must be registered on the SoarChain network prior to participating. When a driver subscribes to ride requests through a ride-sharing application, riders will be presented with a list of available drivers. Subsequently, a rider can initiate an escrow request by sending a request to create escrow, along with the driver's address.
+
+3- Once the node is operational, it's time to interact with the escrow smart contract by following the steps below:
 
 * make deploy-escrow
 * make init-escrow

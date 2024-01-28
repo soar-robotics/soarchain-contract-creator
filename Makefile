@@ -20,6 +20,10 @@ SCRIPTS := ./scripts/escrow/build-escrow.sh \
 		   ./scripts/subscription/subscription-details.sh \
 		   ./scripts/subscription/subscription-list.sh \
 		   ./scripts/subscription/subscription-list-multiple.sh \
+		   ./scripts/setup/configure-workspace.sh \
+		   ./scripts/setup/add-master.sh \
+		   ./scripts/setup/add-rider.sh \
+
 
 # Target to make all script files executable
 make-scripts-executable:
@@ -37,17 +41,15 @@ export NODE = http://localhost:26657
 export CHAINID = soarchaindevnet
 export DENOM = udmotus
 export ACCOUNT = rider
-export LOCATION = istanbul
 
 ############
 ## DEVNET ##
 ############
+# export CHAIN = soarchaind
 # export NODE = http://164.92.252.231:26657
 # export CHAINID = soarchaintestnet
 # export DENOM = utmotus
-# export CHAIN = soarchaind
 # export ACCOUNT = rider
-# export LOCATION = istanbul
 
 #######################
 ## Docker Container ###
@@ -61,25 +63,36 @@ stop-node:
 
 export ESCROW_CONTRACT_ADDRESS = soar14hj2tavq8fpesdwxxcu44rty3hh90vhujrvcmstl4zr3txmfvw9sg0qwca
 export SUBSCRIPTION_CONTRACT_ADDRESS = 
-export subscription_code = 1
-export code = 2
+export code = 1
+export subscription_code = 2
 export escrow-id = 1
 export LOCK = 7645
 export SECRET = 7645
 export DEPOSIT = 45687
-export cw20Code = 2
+export LOCATION = istanbul
+export MASTERACCOUNT = soarMasterAccount
+export DRIVERACCOUNT = driver
+
+#####################
+## Add Keys ##
+
+add-master:
+	./scripts/setup/add-master.sh $(MASTERACCOUNT)
+
+add-rider:
+	./scripts/setup/add-rider.sh $(ACCOUNT)
 
 #####################
 ## Escrow Contract ##
 
 deploy-escrow:
-	./scripts/escrow/deploy-escrow.sh
+	./scripts/escrow/deploy-escrow.sh $(MASTERACCOUNT)
 
 init-escrow:
-	./scripts/escrow/init-escrow.sh $(code)
+	./scripts/escrow/init-escrow.sh $(code) $(MASTERACCOUNT)
 
 create-escrow:
-	./scripts/escrow/create-escrow.sh $(escrow-id) $(LOCK) $(DEPOSIT)
+	./scripts/escrow/create-escrow.sh $(escrow-id) $(LOCK) $(DEPOSIT) $(DRIVERACCOUNT)
 
 list-escrow:
 	./scripts/escrow/list-escrow.sh
@@ -128,29 +141,26 @@ send-token-to-account:
 send-token-to-contract:
 	./scripts/escrow/send-token.sh  $(ESCROW_CONTRACT_ADDRESS) $(tokentosend)
 
+#####################
+## Setup Workspace ##
 
-###################
-## CW20 Contract ##
-
-build-cw20:
-	./scripts/cw20/build-cw20.sh "$(shell pwd)/cw-plus"
-
-compile-cw20:
-	./scripts/cw20/compile-cw20.sh "$(shell pwd)/cw-plus"
-
-deploy-cw20:
-	./scripts/cw20/deploy-cw20.sh
-
-init-cw20:
-	./scripts/cw20/init-cw20.sh $(cw20Code)
+# Using this script Rust will be installed successfully,
+# the script would be executable, and WebAssembly target will be added added.
+install-rust:
+	./scripts/setup/install-and-fix-rust-with-wasm.sh
 
 
 ##############################
 ## Pre-Deploy Configuration ##
 
+
+# Execute this target once you update the code otherwise there is no need to build project.
 build-escrow:
 	./scripts/escrow/build-escrow.sh "$(shell pwd)/escrow"
 
+
+#This script likely contains instructions for compiling the escrow module, handling dependencies,
+# and ensuring that the compiled code is ready for integration.
 compile-escrow:
 	./scripts/escrow/compile-escrow.sh "$(shell pwd)/escrow"
 

@@ -1,7 +1,9 @@
 #!/bin/sh
 
+MASTER=$1
+
 $CHAIN tx wasm store ./escrow/artifacts/escrow.wasm  \
---from $ACCOUNT \
+--from $MASTER \
 --node $NODE \
 --chain-id $CHAINID \
 --gas-prices 0.1$DENOM \

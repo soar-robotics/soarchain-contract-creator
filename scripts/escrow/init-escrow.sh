@@ -1,6 +1,7 @@
 #!/bin/sh
 
 CODE_ID=$1
+MASTER=$2
 
 INIT='{'\
 '"denom": "'"$DENOM"'"'\
@@ -9,7 +10,7 @@ INIT='{'\
 $CHAIN tx wasm instantiate $CODE_ID "$INIT" \
 --label "SOARCHAIN ESCROW INIT" \
 --no-admin \
---from $ACCOUNT \
+--from $MASTER \
 --node $NODE \
 --chain-id $CHAINID \
 --gas-prices 0.1$DENOM \
@@ -20,7 +21,7 @@ $CHAIN tx wasm instantiate $CODE_ID "$INIT" \
 
 
 $CHAIN tx bank send \
-$($CHAIN  keys show -a soarMasterAccount) $ESCROW_CONTRACT_ADDRESS 100000$DENOM \
+$($CHAIN  keys show -a $MASTER) $ESCROW_CONTRACT_ADDRESS 100000$DENOM \
 --chain-id $CHAINID \
 --node $NODE \
 --gas-prices 0.1$DENOM \
