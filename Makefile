@@ -14,6 +14,12 @@ SCRIPTS := ./scripts/escrow/build-escrow.sh \
 		   ./scripts/escrow/list-escrow.sh \
 		   ./scripts/escrow/send-token.sh \
 		   ./scripts/escrow/withdraw-escrow.sh \
+		   ./scripts/subscription/deploy-subscription.sh \
+		   ./scripts/subscription/init-subscription.sh \
+		   ./scripts/subscription/subscribe.sh \
+		   ./scripts/subscription/subscription-details.sh \
+		   ./scripts/subscription/subscription-list.sh \
+		   ./scripts/subscription/subscription-list-multiple.sh \
 
 # Target to make all script files executable
 make-scripts-executable:
@@ -31,6 +37,7 @@ export NODE = http://localhost:26657
 export CHAINID = soarchaindevnet
 export DENOM = udmotus
 export ACCOUNT = rider
+export LOCATION = istanbul
 
 ############
 ## DEVNET ##
@@ -40,6 +47,7 @@ export ACCOUNT = rider
 # export DENOM = utmotus
 # export CHAIN = soarchaind
 # export ACCOUNT = rider
+# export LOCATION = istanbul
 
 #######################
 ## Docker Container ###
@@ -52,8 +60,9 @@ stop-node:
 
 
 export ESCROW_CONTRACT_ADDRESS = soar14hj2tavq8fpesdwxxcu44rty3hh90vhujrvcmstl4zr3txmfvw9sg0qwca
-export code = 1
-
+export SUBSCRIPTION_CONTRACT_ADDRESS = 
+export subscription_code = 1
+export code = 2
 export escrow-id = 1
 export LOCK = 7645
 export SECRET = 7645
@@ -62,7 +71,6 @@ export cw20Code = 2
 
 #####################
 ## Escrow Contract ##
-
 
 deploy-escrow:
 	./scripts/escrow/deploy-escrow.sh
@@ -84,6 +92,30 @@ withdraw-escrow:
 
 cancel-escrow:
 	./scripts/escrow/cancel-escrow.sh $(escrow-id)
+
+#####################
+## Subscription Contract ##
+
+deploy-subscription:
+	./scripts/subscription/deploy-subscription.sh
+
+init-subscription:
+	./scripts/subscription/init-subscription.sh $(subscription_code)
+
+subscribe:
+	./scripts/subscription/subscribe.sh $(from) $(nkn) $(location) 
+
+subscription-details:
+	./scripts/subscription/subscription-details.sh $(addr)
+
+# ex: make subscription-list location=istanbul
+subscription-list:
+	./scripts/subscription/subscription-list.sh $(location)
+
+# ex: make subscription-list-multiple locations=istanbul, ...
+subscription-list-multiple:
+	./scripts/subscription/subscription-list-multiple.sh $(locations)
+
 
 ##################
 ## Native Token ##
@@ -115,7 +147,6 @@ init-cw20:
 
 ##############################
 ## Pre-Deploy Configuration ##
-
 
 build-escrow:
 	./scripts/escrow/build-escrow.sh "$(shell pwd)/escrow"

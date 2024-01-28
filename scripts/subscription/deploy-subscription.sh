@@ -1,6 +1,7 @@
 #!/bin/sh
 
-$CHAIN tx wasm store ./escrow/artifacts/escrow.wasm  \
+
+$CHAIN tx wasm store ./subscription/artifacts/subscription.wasm  \
 --from $ACCOUNT \
 --node $NODE \
 --chain-id $CHAINID \
