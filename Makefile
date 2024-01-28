@@ -24,6 +24,8 @@ SCRIPTS := ./scripts/escrow/build-escrow.sh \
 		   ./scripts/setup/add-master.sh \
 		   ./scripts/setup/add-rider.sh \
 		   ./scripts/setup/add-driver.sh \
+		   ./scripts/subscription/build-subscription.sh \
+		   ./scripts/subscription/compile-subscription.sh \
 
 
 # Target to make all script files executable
@@ -140,7 +142,7 @@ subscription-list-multiple:
 export tokentosend = 1000000000
 
 send-token-to-account:
-	./scripts/escrow/send-token.sh  $(driver-address) $(tokentosend)
+	./scripts/escrow/send-token.sh  $(ACCOUNT) $(tokentosend)
 
 send-token-to-contract:
 	./scripts/escrow/send-token.sh  $(ESCROW_CONTRACT_ADDRESS) $(tokentosend)
@@ -162,10 +164,16 @@ install-rust:
 build-escrow:
 	./scripts/escrow/build-escrow.sh "$(shell pwd)/escrow"
 
+build-subscription:
+	./scripts/subscription/build-subscription.sh "$(shell pwd)/subscription"
+
 
 #This script likely contains instructions for compiling the escrow module, handling dependencies,
 # and ensuring that the compiled code is ready for integration.
 compile-escrow:
 	./scripts/escrow/compile-escrow.sh "$(shell pwd)/escrow"
+
+compile-subscription:
+	./scripts/subscription/compile-subscription.sh "$(shell pwd)/subscription"
 
 
